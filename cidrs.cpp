@@ -10,7 +10,6 @@ std::string to_string(const T &value) {
     return os.str();
 }
 
-
 uint32_t ipToUInt(const std::string ip) {
   int a, b, c, d;
   sscanf(ip.c_str(), "%d.%d.%d.%d", &a, &b, &c, &d);
@@ -35,6 +34,17 @@ bool isIpInRange(char* ip_star, char* network_star) {
     return (net_lower <= ip_addr && ip_addr <= (net_lower | (~mask_addr)));
 }
 
+bool isIpInRanges(char* ip_star, boost::python::list& networks_star) {
+
+    for (int i = 0; i < len(networks_star); i++){
+      char* range = boost::python::extract<char*>(networks_star[i]);
+      if (isIpInRange(ip_star, range)) {
+        return true;
+      }
+    }
+    return false;
+}
+
 //void test(const std::string ip, const std::string network, bool expected) {
 //    printf((isIpInRange(ip, network) == expected ? "Success %s %s %s\n" : "Failure %s %s %s\n"), ip.c_str(), expected ? "in" : "NOT in",network.c_str());
 //}
@@ -46,13 +56,9 @@ bool isIpInRange(char* ip_star, char* network_star) {
 //    test("192.168.1.3", "192.168.1.2/32", false);
 //}
 
-bool tester(char* a) {
-  return true;
-}
-
 BOOST_PYTHON_MODULE(cidrs)
 {
     using namespace boost::python;
 	def("isIpInRange", isIpInRange);
-	def("tester", tester);
+	def("isIpInRanges", isIpInRanges);
 }
